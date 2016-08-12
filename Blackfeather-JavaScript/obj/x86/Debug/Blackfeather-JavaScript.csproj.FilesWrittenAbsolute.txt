@@ -1,0 +1,1 @@
+/home/ravun/Workspace/Blackfeather-JavaScript/Blackfeather-JavaScript/obj/x86/Debug/.NETFramework,Version=v4.5.AssemblyAttribute.cs

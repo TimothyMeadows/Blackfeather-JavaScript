@@ -3,11 +3,10 @@ var Stopwatch = require("node-stopwatch").Stopwatch;
 var stopwatch = Stopwatch.create();
 
 stopwatch.start();
-var text = "caw caw caw!"; // any text should work Utf8, Utf16 have been tested.
-var salt = new Blackfeather.Security.Cryptology.SecureRandom().NextBytes(8); // 8 byte salting required
-var rounds = 1; // more rounds = more cpu, more cpu = more security, must match when re-computed.
+var text = "caw caw caw!";
+var salt = "tNfyIx2PZjf6C+KC9N7Ydg==";
 
-var kdf = new Blackfeather.Security.Cryptology.Kdf().Compute(text, salt, 32, rounds);
+var kdf = new Blackfeather.Security.Cryptology.Kdf().Compute(text, salt, 32);
 stopwatch.stop();
 
 console.log("ticks: " + stopwatch.elapsedTicks);
@@ -16,4 +15,5 @@ console.log("seconds: " + stopwatch.elapsed.seconds);
 console.log("minutes: " + stopwatch.elapsed.minutes);
 console.log("\n");
 
-console.log("example kdf rachet: " + kdf);
+console.log("kdf salt: " + kdf.Salt.toString(Blackfeather.Data.Encoding.BinaryEncoding.Base64));
+console.log("kdf rachet: " + kdf.Data.toString(Blackfeather.Data.Encoding.BinaryEncoding.Base64));

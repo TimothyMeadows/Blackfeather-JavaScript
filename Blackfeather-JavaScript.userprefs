@@ -1,6 +1,12 @@
 ﻿<Properties StartupItem="Blackfeather-JavaScript/Blackfeather-JavaScript.csproj">
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug|x86" />
-  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Blackfeather-JavaScript/tests/Hmac-Test.js">
+    <Files>
+      <File FileName="Blackfeather-JavaScript/blackfeather-1.0.0.js" Line="4978" Column="47" />
+      <File FileName="Blackfeather-JavaScript/tests/Hash-Test.js" Line="18" Column="1" />
+      <File FileName="Blackfeather-JavaScript/tests/Hmac-Test.js" Line="7" Column="25" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
