@@ -4969,7 +4969,7 @@ var Blackfeather = (function () {
                 var output = new Blackfeather.Security.Cryptology.SaltedData();
 
                 output.Salt = (typeof salt === "undefined" || salt === null) ? new Blackfeather.Security.Cryptology.SecureRandom().NextBytes(16) : CryptoJS.enc.Base64.parse(salt);
-                output.Data = CryptoJS.SHA256(new Blackfeather.Security.Cryptology.Kdf().Compute(data, output.Salt.toString(CryptoJS.enc.Base64)).Data);
+                output.Data = CryptoJS.enc.Hex.parse(CryptoJS.SHA256(new Blackfeather.Security.Cryptology.Kdf().Compute(data, output.Salt.toString(CryptoJS.enc.Base64)).Data).toString(CryptoJS.enc.Hex));
 
                 return output;
             };
@@ -4977,58 +4977,53 @@ var Blackfeather = (function () {
         Hmac: function () {
             this.Compute = function (data, key, salt) {
                 var output = new Blackfeather.Security.Cryptology.SaltedData();
-
                 output.Salt = (typeof salt === "undefined" || salt === null) ? new Blackfeather.Security.Cryptology.SecureRandom().NextBytes(16) : CryptoJS.enc.Base64.parse(salt);
-                output.Data = CryptoJS.HmacSHA256(data, new Blackfeather.Security.Cryptology.Kdf().Compute(key, output.Salt.toString(CryptoJS.enc.Base64)).Data);
+                var kdf = new Blackfeather.Security.Cryptology.Kdf().Compute(key, output.Salt.toString(CryptoJS.enc.Base64)).Data;
+                output.Data = CryptoJS.enc.Hex.parse(CryptoJS.HmacSHA256(data, kdf).toString(CryptoJS.enc.Hex));
 
                 return output;
             };
         },
-        Encryption: function (encoding) {
-            this.Compute = function (data, password, secondaryVerifier, rounds) {
-                var iterations = (typeof rounds === "undefined" || rounds === null) ? 1 : rounds;
-                var srng = new Blackfeather.Security.Cryptology.SecureRandom();
-                var keyHash = new Blackfeather.Security.Cryptology.Hash().Compute(password, iterations, srng.NextBytes(8));
-                var key = encoding.parse(keyHash.Data).toString(CryptoJS.enc.Hex);
-                var iv = CryptoJS.enc.Hex.parse(srng.NextBytes(16));
+        Encryption: function () {
+            this.Compute = function (data, password, salt, secondaryVerifier) {
+            	var saltedData = new Blackfeather.Security.Cryptology.SaltedData();
+                var salting = (typeof salt === "undefined" || salt === null) ? new Blackfeather.Security.Cryptology.SecureRandom().NextBytes(16) : CryptoJS.enc.Base64.parse(salt);
+                var keyHash = new Blackfeather.Security.Cryptology.Hash().Compute(password, salting.toString(CryptoJS.enc.Base64));
+                var iv = CryptoJS.enc.Hex.parse(new Blackfeather.Security.Cryptology.SecureRandom().NextBytes(16));
 
                 if (typeof secondaryVerifier !== "undefined" || secondaryVerifier !== null) {
-                    data += new Blackfeather.Security.Cryptology.Hmac().Compute(secondaryVerifier, keyHash.Data, iterations, keyHash.Salt).Data;
+					var kdf = new Blackfeather.Security.Cryptology.Hmac().Compute(secondaryVerifier, keyHash.Data, keyHash.Salt.toString(CryptoJS.enc.Base64)).Data.toString(CryptoJS.enc.Hex);
+                    data += kdf;
                 }
 
-                data = encoding.parse(data);
-                var output = CryptoJS.AES.encrypt(data, CryptoJS.enc.Hex.parse(key), { mode: CryptoJS.mode.CTR, iv: iv, padding: CryptoJS.pad.NoPadding });
-                output = CryptoJS.enc.Hex.parse(output.toString());
-                var outputHash = CryptoJS.enc.Hex.parse(new Blackfeather.Security.Cryptology.Hmac().Compute(output, keyHash.Data, iterations, keyHash.Salt).Data);
+                var output = CryptoJS.enc.Hex.parse(CryptoJS.AES.encrypt(data, keyHash.Data, { mode: CryptoJS.mode.CTR, iv: iv, padding: CryptoJS.pad.NoPadding }).ciphertext.toString(CryptoJS.enc.Hex));
+                var outputHash = new Blackfeather.Security.Cryptology.Hmac().Compute(output, keyHash.Data, keyHash.Salt.toString(CryptoJS.enc.Base64)).Data;
 
-                iv = iv.concat(CryptoJS.enc.Hex.parse(keyHash.Salt));
                 output = iv.concat(output);
                 output = output.concat(outputHash);
 
-                return output.toString(CryptoJS.enc.Base64);
+                saltedData.Salt = CryptoJS.enc.Hex.parse(salting.toString(CryptoJS.enc.Hex));
+                saltedData.Data = output;
+
+                return saltedData;
             };
         },
-        Decryption: function (encoding) {
-            this.Compute = function (data, password, secondaryVerifier, rounds) {
-                var iterations = (typeof rounds === "undefined" || rounds === null) ? 1 : rounds;
+        Decryption: function () {
+            this.Compute = function (data, password, salt, secondaryVerifier) {
                 var dataBytes = CryptoJS.enc.Base64.parse(data).toString(CryptoJS.enc.Hex);
                 var iv = CryptoJS.enc.Hex.parse(dataBytes.substr(0, 32));
-                var keyHashSalt = dataBytes.substring(32, 48);
                 var verifier = dataBytes.substring(dataBytes.length - 64, dataBytes.length);
-                var keyHash = new Blackfeather.Security.Cryptology.Hash().Compute(password, iterations, keyHashSalt);
-                var key = encoding.parse(keyHash.Data).toString(CryptoJS.enc.Hex);
+                var keyHash = new Blackfeather.Security.Cryptology.Hash().Compute(password, salt);
 
-                var input = dataBytes.substring(48, dataBytes.length - 64);
-                var inputHash = new Blackfeather.Security.Cryptology.Hmac().Compute(CryptoJS.enc.Hex.parse(input), keyHash.Data, iterations, keyHash.Salt).Data;
-                if (inputHash !== verifier) {
+                var input = CryptoJS.enc.Hex.parse(dataBytes.substring(32, dataBytes.length - 64));
+                var inputHash = new Blackfeather.Security.Cryptology.Hmac().Compute(input, keyHash.Data, salt).Data;
+                if (inputHash.toString(CryptoJS.enc.Hex) !== verifier) {
                     return null;
                 }
 
-                var cipher = CryptoJS.AES.decrypt(CryptoJS.enc.Base64.stringify(CryptoJS.enc.Hex.parse(input)), CryptoJS.enc.Hex.parse(key), { mode: CryptoJS.mode.CTR, iv: iv, padding: CryptoJS.pad.NoPadding });
-                var output = encoding.stringify(cipher);
-
+                var output = CryptoJS.AES.decrypt(input.toString(CryptoJS.enc.Base64), keyHash.Data, { mode: CryptoJS.mode.CTR, iv: iv, padding: CryptoJS.pad.NoPadding }).toString(CryptoJS.enc.Utf8);
                 if (typeof secondaryVerifier !== "undefined" || secondaryVerifier !== null) {
-                    var expectedVerifier = new Blackfeather.Security.Cryptology.Hmac().Compute(secondaryVerifier, keyHash.Data, iterations, keyHash.Salt).Data;
+                    var expectedVerifier = new Blackfeather.Security.Cryptology.Hmac().Compute(secondaryVerifier, keyHash.Data, salt).Data.toString(CryptoJS.enc.Hex);
                     var suspectedVerifier = output.substr(output.length - 64, 64);
 
                     if ((expectedVerifier !== suspectedVerifier)) {
