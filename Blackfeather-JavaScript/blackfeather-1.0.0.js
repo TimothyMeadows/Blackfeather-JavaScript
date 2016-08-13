@@ -5036,7 +5036,7 @@ var Blackfeather = (function () {
                 return output;
             };
         },
-        DiffieHellman: function () {
+        KeyExchange: function () {
             this.KeyPair = function (Private, Public) {
                 this.Private = Private;
                 this.Public = Public;
