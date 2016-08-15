@@ -112,16 +112,16 @@ This is a collection of usable compression libraries in JavaScript. Right now on
 #Blackfeather.Data.Encoding
 #TextEncoding
 ```text
-  Latin1:Encoder
-  Utf8:Encoder
-  Utf16:Encoder
-  Utf16BigEndian:Encoder
-  Utf16LittleEndian:Encoder
+  Latin1
+  Utf8
+  Utf16
+  Utf16BigEndian
+  Utf16LittleEndian
 ```
 #BinaryEncoding
 ```text
-  Hex:Encoder
-  Base64:Encoder
+  Hex
+  Base64
 ```
 
 #Testing
