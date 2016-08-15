@@ -1,0 +1,17 @@
+{
+  "name": "Blackfeather",
+  "version": "1.0.0",
+  "main": "blackfeather-1.0.0.min.js",
+  "license": "MIT",
+  "author": "Timothy D Meadows II <timothy@timothymeadows.com>",
+  "description": "Blackfeather JavaScript framework for node.js, and, browsers.",
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "dependencies": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TimothyMeadows/Blackfeather-JavaScript"
+  }
+}
