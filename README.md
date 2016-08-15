@@ -96,7 +96,7 @@ Remove all entries from memory. Leaves memory unusable until reconstructed.
 #Blackfeather.Data.Compression
 This is a collection of usable compression libraries in JavaScript. Right now only LZStrng is supported.
 
-#Blackfeather.Data.Compression.LZString 
+#LZString 
 ##Compress(data:string):string
 ```javascript
   var compressed = Blackfeather.Data.Compression.LZString.Compress("caw caw caw!");
@@ -109,6 +109,21 @@ This is a collection of usable compression libraries in JavaScript. Right now on
   );
   console.log(compressed);
 ```
+#Blackfeather.Data.Encoding
+#TextEncoding
+```text
+  Latin1:Encoder
+  Utf8:Encoder
+  Utf16:Encoder
+  Utf16BigEndian:Encoder
+  Utf16LittleEndian:Encoder
+```
+#BinaryEncoding
+```text
+  Hex:Encoder
+  Base64:Encoder
+```
+
 #Testing
 Tests require node.js, and, node-stopwatch.
 ```bash
