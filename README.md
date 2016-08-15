@@ -28,7 +28,6 @@ Model that data in memory is read, and, written too.
     this.Value = value; // any
   };
 ```
-
 ##Read(ponter:string, name:string):ManagedMemorySpace
 Read entry from memory that matches the pointer, and, name.
 ```javascript
@@ -94,7 +93,22 @@ Remove all entries from memory. Leaves memory unusable until reconstructed.
   var memory = new Blackfeather.Data.ManagedMemory();
   memory.Dispose();
 ```
+#Blackfeather.Data.Compression
+This is a collection of usable compression libraries in JavaScript. Right now only LZStrng is supported.
 
+#Blackfeather.Data.Compression.LZString 
+##Compress(data:string):string
+```javascript
+  var compressed = Blackfeather.Data.Compression.LZString.Compress("caw caw caw!");
+  console.log(compressed);
+```
+##Decompress(data:string):string
+```javascript
+  var decompressed = Blackfeather.Data.Compression.LZString.Decompress(
+    Blackfeather.Data.Compression.LZString.Compress("caw caw caw!")
+  );
+  console.log(compressed);
+```
 #Testing
 Tests require node.js, and, node-stopwatch.
 ```bash
