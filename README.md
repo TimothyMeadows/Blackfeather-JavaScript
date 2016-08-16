@@ -123,7 +123,76 @@ This is a collection of usable compression libraries in JavaScript. Right now on
   Hex
   Base64
 ```
-
+#Blackfeather.Security.Cryptology
+```javascript
+  Blackfeather.Security.Cryptology.SaltedData = function () {
+    this.Data = null;
+    this.Salt = null;
+  }
+```
+#Blackfeather.Security.Cryptology.SecureRandom
+##NextBytes(length:number):string
+Returns random bytes to the specified length.
+```javascript
+  var rng = new Blackfeather.Security.Cryptology.SecureRandom().NextBytes(16);
+  console.log(rng);
+```
+##NextBigInt(length:number):string
+Returns random bytes to the specified length.
+```javascript
+  var rng = new Blackfeather.Security.Cryptology.SecureRandom().NextBigInt(2048);
+  console.log(rng);
+```
+##Next(min:number, max:number):number
+Returns random bytes to the specified length.
+```javascript
+  var rng = new Blackfeather.Security.Cryptology.SecureRandom().Next(32, 134);
+  console.log(rng);
+```
+#Blackfeather.Security.Cryptology.Kdf
+##Compute(data:string, salt:Base64, length:number):SaltedData
+Compute PBKDF2 returning SaltedData.
+```javascript
+  var kdf = new Blackfeather.Security.Cryptology.Kdf().Compute(
+    "caw caw caw!",
+    "tNfyIx2PZjf6C+KC9N7Ydg==",
+    32
+  );
+  console.log(kdf);
+```
+#Blackfeather.Security.Cryptology.Hash
+##Compute(data:string, salt:Base64):SaltedData
+Compute SHA256 wth PBKDF2 returning SaltedData.
+```javascript
+  var hash = new Blackfeather.Security.Cryptology.Hash().Compute(
+    "caw caw caw!",
+    "tNfyIx2PZjf6C+KC9N7Ydg=="
+  );
+  console.log(hash);
+```
+#Blackfeather.Security.Cryptology.Hmac
+##Compute(data:string, key:string, salt:Base64):SaltedData
+Compute HMAC-SHA256 wth PBKDF2 returning SaltedData.
+```javascript
+  var hmac = new Blackfeather.Security.Cryptology.Hmac().Compute(
+    "caw caw caw!",
+    "water123",
+    "tNfyIx2PZjf6C+KC9N7Ydg=="
+  );
+  console.log(hmac);
+```
+#Blackfeather.Security.Cryptology.Encryption
+##Compute(data:string, password:string, salt:Base64, secondaryVerifier:string):SaltedData
+Compute authentcated AES-CTR wth HMAC-SHA256, and, PBKDF2.
+```javascript
+  var cipher = new Blackfeather.Security.Cryptology.Encryption().Compute(
+    "caw caw caw!",
+    "water123",
+    "tNfyIx2PZjf6C+KC9N7Ydg==",
+    "321retaw"
+  );
+  console.log(cipher);
+```
 #Testing
 Tests require node.js, and, node-stopwatch.
 ```bash
