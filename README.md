@@ -6,7 +6,7 @@ Browser
 ```
 Node.js
 ```bash
-  npm install blackfeather@1.0.0 --save
+  npm install Blackfeather@1.0.0 --save
 ```
 Source
 ```bash
