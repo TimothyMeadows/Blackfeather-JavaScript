@@ -1,20 +1,20 @@
 # Blackfeather in JavaScript / Node
 #Installing
-Browser
+##Browser
 ```html
   <script src="blackfeather-1.0.0.min.js"></script>
 ```
-Node.js
+##Node.js
 ###https://www.npmjs.com/package/Blackfeather
 ```bash
   npm install Blackfeather --save
 ```
-Nuget
+##Nuget
 ###https://www.nuget.org/packages/Blackfeather-JavaScript/
 ```bash
   Install-Package Blackfeather-JavaScript
 ```
-Source
+##Source
 ```bash
   git clone https://github.com/TimothyMeadows/Blackfeather-JavaScript
 ```
