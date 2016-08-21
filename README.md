@@ -5,8 +5,14 @@ Browser
   <script src="blackfeather-1.0.0.min.js"></script>
 ```
 Node.js
+###https://www.npmjs.com/package/Blackfeather
 ```bash
-  npm install Blackfeather@1.0.0 --save
+  npm install Blackfeather --save
+```
+Nuget
+###https://www.nuget.org/packages/Blackfeather-JavaScript/
+```bash
+  Install-Package Blackfeather-JavaScript
 ```
 Source
 ```bash
