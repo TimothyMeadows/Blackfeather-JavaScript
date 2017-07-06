@@ -1,20 +1,20 @@
 # Blackfeather in JavaScript / Node
 #Installing
-##Browser
+#Browser
 ```html
   <script src="blackfeather-1.0.0.min.js"></script>
 ```
-##Node.js
-###https://www.npmjs.com/package/Blackfeather
+#Node.js
+https://www.npmjs.com/package/Blackfeather
 ```bash
   npm install Blackfeather --save
 ```
-##Nuget
-###https://www.nuget.org/packages/Blackfeather-JavaScript/
+#Nuget
+#https://www.nuget.org/packages/Blackfeather-JavaScript/
 ```bash
   Install-Package Blackfeather-JavaScript
 ```
-##Source
+#Source
 ```bash
   git clone https://github.com/TimothyMeadows/Blackfeather-JavaScript
 ```
@@ -22,7 +22,7 @@
 #Blackfeather.Data.ManagedMemory
 Ths is a helper class for storing data in memory in JavaScript. It supports serialization between languages allowing you to import, and, export serializable types.
 
-##ManagedMemorySpace
+#ManagedMemorySpace
 Model that data in memory is read, and, written too.
 ```javascript
   Blackfeather.Data.ManagedMemorySpace = function (pointer, name, value, created, accessed, updated) {
@@ -34,27 +34,27 @@ Model that data in memory is read, and, written too.
     this.Value = value; // any
   };
 ```
-##Read(ponter:string, name:string):ManagedMemorySpace
+#Read(ponter:string, name:string):ManagedMemorySpace
 Read entry from memory that matches the pointer, and, name.
 ```javascript
   var memory = new Blackfeather.Data.ManagedMemory();
   var caw = memory.Read("birds", "raven");
   console.log(caw);
 ```
-##ReadAll(ponter:string):[ManagedMemorySpace]
+#ReadAll(ponter:string):[ManagedMemorySpace]
 Read all entries from memory that matches the pointer.
 ```javascript
   var memory = new Blackfeather.Data.ManagedMemory();
   var birds = memory.ReadAll("birds");
   console.log(birds);
 ```
-##Write(ponter:string, name:string, value:any):void
+#Write(ponter:string, name:string, value:any):void
 Write entry into memory. Remove any previous entry that matches the pointer, and, name.
 ```javascript
   var memory = new Blackfeather.Data.ManagedMemory();
   memory.Write("birds", "raven", "caw");
 ```
-##WriteAll(spaces:[ManagedMemorySpace]):void
+#WriteAll(spaces:[ManagedMemorySpace]):void
 Write all entres into memory. Remove any previous entries that matches the pointer, and, name.
 ```javascript
   var memory = new Blackfeather.Data.ManagedMemory();
@@ -62,38 +62,38 @@ Write all entres into memory. Remove any previous entries that matches the point
   
   memory.WriteAll(spaces);
 ```
-##Delete(ponter:string, name:string):void
+#Delete(ponter:string, name:string):void
 Remove any entry from memory that matches the pointer, and, name.
 ```javascript
   var memory = new Blackfeather.Data.ManagedMemory();
   memory.Delete("birds", "raven");
 ```
-##DeleteAll(ponter:string):void
+#DeleteAll(ponter:string):void
 Remove all entries from memory that matches the pointer.
 ```javascript
   var memory = new Blackfeather.Data.ManagedMemory();
   memory.DeleteAll("birds");
 ```
-##Import(memory:ManagedMemory):void
+#Import(memory:ManagedMemory):void
 Load ManagedMemory class as current MangedMemory class.
 ```javascript
   var memory = new Blackfeather.Data.ManagedMemory();
   var memory2 = new Blackfeather.Data.ManagedMemory();
   memory.Import(memory2);
 ```
-##Export():ManagedMemory
+#Export():ManagedMemory
 Return current ManagedMemory class.
 ```javascript
   var memory = new Blackfeather.Data.ManagedMemory();
   var memory2 = memory.Export();
 ```
-##Clear():void
+#Clear():void
 Remove all entries from memory. Leaves memory still usable.
 ```javascript
   var memory = new Blackfeather.Data.ManagedMemory();
   memory.Clear();
 ```
-##Dispose():void
+#Dispose():void
 Remove all entries from memory. Leaves memory unusable until reconstructed.
 ```javascript
   var memory = new Blackfeather.Data.ManagedMemory();
@@ -103,12 +103,12 @@ Remove all entries from memory. Leaves memory unusable until reconstructed.
 This is a collection of usable compression libraries in JavaScript. Right now only LZStrng is supported.
 
 #LZString 
-##Compress(data:string):string
+#Compress(data:string):string
 ```javascript
   var compressed = Blackfeather.Data.Compression.LZString.Compress("caw caw caw!");
   console.log(compressed);
 ```
-##Decompress(data:string):string
+#Decompress(data:string):string
 ```javascript
   var decompressed = Blackfeather.Data.Compression.LZString.Decompress(
     Blackfeather.Data.Compression.LZString.Compress("caw caw caw!")
@@ -137,13 +137,13 @@ This is a collection of usable compression libraries in JavaScript. Right now on
   }
 ```
 #Blackfeather.Security.Cryptology.SecureRandom
-##NextBytes(length:number):string
+#NextBytes(length:number):string
 Returns random bytes to the specified length.
 ```javascript
   var rng = new Blackfeather.Security.Cryptology.SecureRandom().NextBytes(16);
   console.log(rng);
 ```
-##NextBigInt(length:number):string
+#NextBigInt(length:number):string
 Returns random bytes to the specified length.
 ```javascript
   var rng = new Blackfeather.Security.Cryptology.SecureRandom().NextBigInt(2048);
@@ -156,7 +156,7 @@ Returns random bytes to the specified length.
   console.log(rng);
 ```
 #Blackfeather.Security.Cryptology.Kdf
-##Compute(data:string, salt:Base64, length:number):SaltedData
+#Compute(data:string, salt:Base64, length:number):SaltedData
 Compute PBKDF2 returning SaltedData.
 ```javascript
   var kdf = new Blackfeather.Security.Cryptology.Kdf().Compute(
@@ -167,7 +167,7 @@ Compute PBKDF2 returning SaltedData.
   console.log(kdf);
 ```
 #Blackfeather.Security.Cryptology.Hash
-##Compute(data:string, salt:Base64):SaltedData
+#Compute(data:string, salt:Base64):SaltedData
 Compute SHA256 wth PBKDF2 returning SaltedData.
 ```javascript
   var hash = new Blackfeather.Security.Cryptology.Hash().Compute(
@@ -177,7 +177,7 @@ Compute SHA256 wth PBKDF2 returning SaltedData.
   console.log(hash);
 ```
 #Blackfeather.Security.Cryptology.Hmac
-##Compute(data:string, key:string, salt:Base64):SaltedData
+#Compute(data:string, key:string, salt:Base64):SaltedData
 Compute HMAC-SHA256 wth PBKDF2 returning SaltedData.
 ```javascript
   var hmac = new Blackfeather.Security.Cryptology.Hmac().Compute(
@@ -188,7 +188,7 @@ Compute HMAC-SHA256 wth PBKDF2 returning SaltedData.
   console.log(hmac);
 ```
 #Blackfeather.Security.Cryptology.Encryption
-##Compute(data:string, password:string, salt:Base64, secondaryVerifier:string):SaltedData
+#Compute(data:string, password:string, salt:Base64, secondaryVerifier:string):SaltedData
 Compute authentcated AES-CTR wth HMAC-SHA256, and, PBKDF2.
 ```javascript
   var cipher = new Blackfeather.Security.Cryptology.Encryption().Compute(
@@ -200,7 +200,7 @@ Compute authentcated AES-CTR wth HMAC-SHA256, and, PBKDF2.
   console.log(cipher);
 ```
 #Blackfeather.Security.Cryptology.Decryption
-##Compute(data:string, password:string, salt:Base64, secondaryVerifier:string):string
+#Compute(data:string, password:string, salt:Base64, secondaryVerifier:string):string
 Compute authentcated AES-CTR wth HMAC-SHA256, and, PBKDF2.
 ```javascript
   var plain = new Blackfeather.Security.Cryptology.Decryption().Compute(
