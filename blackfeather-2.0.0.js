@@ -8,6 +8,149 @@ var Blackfeather = (function () {
 
     Blackfeather.Data = Blackfeather.Data || {};
     Blackfeather.Data.Serialization = Blackfeather.Data.Serialization || {};
+    Blackfeather.Data.Serialization.ManagedMemory = function (json, instance) {
+        if (instance instanceof Blackfeather.Data.Serialization.ManagedMemory) {
+            return instance;
+        }
+
+        if (!(this instanceof Blackfeather.Data.Serialization.ManagedMemory)) {
+            return new Blackfeather.Data.Serialization.ManagedMemory(instance);
+        }
+
+        JSON = JSON || window.JSON || json;
+        var toJSON = this.toJSON = function (managedMemory) {
+            var memory = managedMemory.Export();
+            return JSON.stringify(memory);
+        };
+
+        var fromJSON = this.fromJSON = function (managedMemory, data) {
+            var managedMemory = JSON.parse(data);
+            managedMemory.Import(managedMemory);
+        };
+    };
+
+    Blackfeather.Data.ManagedMemorySpace = function (pointer, name, value, created, accessed, updated) {
+        this.Created = created;
+        this.Accessed = accessed;
+        this.Updated = updated;
+        this.Pointer = pointer;
+        this.Name = name;
+        this.Value = value;
+    };
+
+    Blackfeather.Data.ManagedMemoryError = function (message) {
+        this.name = "ManagedMemoryError";
+        this.message = message;
+    }
+
+    Blackfeather.Data.ManagedMemory = function (instance) {
+        if (instance instanceof Blackfeather.Data.ManagedMemory) {
+            return instance;
+        }
+
+        if (!(this instanceof Blackfeather.Data.ManagedMemory)) {
+            return new Blackfeather.Data.ManagedMemory(instance);
+        }
+
+        var _disposed = false;
+        var _memory = {};
+
+        var Read = this.Read = function (pointer, name) {
+            if (_disposed) {
+                throw new Blackfeather.Data.ManagedMemoryError("Object is disposed!");
+            }
+
+            if (typeof _memory[pointer] === 'undefined') {
+                return null;
+            }
+
+            if (typeof _memory[pointer][name] === 'undefined' || _memory[pointer][name] === null) {
+                return null;
+            }
+
+            return _memory[pointer][name];
+        };
+
+        var ReadAll = this.ReadAll = function (pointer) {
+            if (_disposed) {
+                throw new Blackfeather.Data.ManagedMemoryError("Object is disposed!");
+            }
+
+            if (typeof _memory[pointer] === 'undefined') {
+                return null;
+            }
+
+            return _memory[pointer];
+        };
+
+        var Write = this.Write = function (pointer, name, value, created, updated, accessed) {
+            if (_disposed) {
+                throw new Blackfeather.Data.ManagedMemoryError("Object is disposed!");
+            }
+
+            if (typeof _memory[pointer] === 'undefined') {
+                _memory[pointer] = {};
+            }
+
+            _memory[pointer][name] = new Blackfeather.Data.ManagedMemorySpace(pointer, name, value, created, updated, accessed);
+        };
+
+        var WriteAll = this.WriteAll = function (spaces) {
+            if (_disposed) {
+                throw new Blackfeather.Data.ManagedMemoryError("Object is disposed!");
+            }
+
+            if (!(Array.isArray(spaces))) {
+                throw new Blackfeather.Data.ManagedMemoryError("Object is not an array!");
+            }
+
+            for (var space in spaces) {
+                if (!(space instanceof Blackfeather.Data.ManagedMemorySpace)) {
+                    throw new Blackfeather.Data.ManagedMemoryError("Object is not of type Blackfeather.Data.ManagedMemorySpace!");
+                }
+
+                Write(space.pointer, space.name, space.value, space.created, space.updated, space.accessed)
+            }
+        };
+
+        var Delete = this.Delete = function (pointer, name) {
+            if (typeof _memory[pointer] === 'undefined') {
+                return null;
+            }
+
+            if (typeof _memory[pointer][name] === 'undefined' || _memory[pointer][name] === null) {
+                return null;
+            }
+
+            delete _memory[pointer][name];
+        };
+
+        var DeleteAll = this.DeleteAll = function (pointer, name) {
+            if (typeof _memory[pointer] === 'undefined') {
+                return null;
+            }
+
+            delete _memory[pointer];
+        };
+
+        var Clear = this.Clear = function () {
+            _memory = [];
+        };
+
+        var Export = this.Export = function () {
+            return _memory;
+        };
+
+        var Import = this.Import = function (managedMemory) {
+            _memory = managedMemory;
+        };
+
+        var Dispose = this.Dispose = function () {
+            _memory = null;
+            _disposed = true;
+        };
+    };
+
 
     Blackfeather.Data.Compression = Blackfeather.Data.Compression || {};
     Blackfeather.Data.Compression.LZString = {
