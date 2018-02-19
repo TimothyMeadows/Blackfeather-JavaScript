@@ -174,7 +174,7 @@ var Blackfeather = (function () {
                 output = iv.concat(output);
                 output = output.concat(outputHash);
 
-                saltedData.Salt = CryptoJS.enc.Hex.parse(salting.toString(CryptoJS.enc.Hex));
+                saltedData.Salt = CryptoJS.enc.Hex.parse(salting.toString());
                 saltedData.Data = output;
 
                 return saltedData;
