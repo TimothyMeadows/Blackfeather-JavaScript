@@ -93,7 +93,7 @@ var Blackfeather = (function () {
             };
         },
         Hmac: function () {
-            this.Compute = function(data, key) {
+            this.Compute = function (data, key) {
                 return CryptoJS.enc.Hex.parse(CryptoJS.HmacSHA256(data, key).toString(CryptoJS.enc.Hex));
             };
 
@@ -102,6 +102,56 @@ var Blackfeather = (function () {
                 output.Salt = (typeof salt === "undefined" || salt === null) ? new Blackfeather.Security.Cryptology.SecureRandom().NextBytes(16) : CryptoJS.enc.Base64.parse(salt);
                 var kdf = new Blackfeather.Security.Cryptology.Kdf().Compute(key, output.Salt.toString(CryptoJS.enc.Base64)).Data;
                 output.Data = CryptoJS.enc.Hex.parse(CryptoJS.HmacSHA256(data, kdf).toString(CryptoJS.enc.Hex));
+
+                return output;
+            };
+        },
+        EncryptionInMotion: function () {
+            this.Compute = function (data, password, salt, secondaryVerifier) {
+                var saltedData = new Blackfeather.Security.Cryptology.SaltedData();
+                var salting = (typeof salt === "undefined" || salt === null) ? new Blackfeather.Security.Cryptology.SecureRandom().NextBytes(16) : CryptoJS.enc.Base64.parse(salt);
+                var keyHash = new Blackfeather.Security.Cryptology.Hash().ComputeSalted(password, salting.toString(CryptoJS.enc.Base64));
+                var iv = CryptoJS.enc.Hex.parse(new Blackfeather.Security.Cryptology.SecureRandom().NextBytes(16));
+
+                if (typeof secondaryVerifier !== "undefined" || secondaryVerifier !== null) {
+                    var kdf = new Blackfeather.Security.Cryptology.Hmac().ComputeSalted(secondaryVerifier, keyHash.Data, keyHash.Salt.toString(CryptoJS.enc.Base64)).Data.toString(CryptoJS.enc.Hex);
+                    data += kdf;
+                }
+
+                var output = CryptoJS.enc.Hex.parse(CryptoJS.AES.encrypt(data, keyHash.Data, { mode: CryptoJS.mode.CTR, iv: iv, padding: CryptoJS.pad.NoPadding }).ciphertext.toString(CryptoJS.enc.Hex));
+                var outputHash = new Blackfeather.Security.Cryptology.Hmac().ComputeSalted(output, keyHash.Data, keyHash.Salt.toString(CryptoJS.enc.Base64)).Data;
+
+                output = iv.concat(output);
+                output = output.concat(outputHash);
+
+                saltedData.Salt = CryptoJS.enc.Hex.parse(salting.toString(CryptoJS.enc.Hex));
+                saltedData.Data = output;
+
+                return saltedData;
+            };
+        },
+        DecryptionInMotion: function () {
+            this.Compute = function (data, password, salt, secondaryVerifier) {
+                var dataBytes = CryptoJS.enc.Base64.parse(data).toString(CryptoJS.enc.Hex);
+                var iv = CryptoJS.enc.Hex.parse(dataBytes.substr(0, 32));
+                var verifier = dataBytes.substring(dataBytes.length - 64, dataBytes.length);
+                var keyHash = new Blackfeather.Security.Cryptology.Hash().ComputeSalted(password, salt);
+
+                var input = CryptoJS.enc.Hex.parse(dataBytes.substring(32, dataBytes.length - 64));
+                var inputHash = new Blackfeather.Security.Cryptology.Hmac().ComputeSalted(input, keyHash.Data, salt).Data;
+                if (inputHash.toString(CryptoJS.enc.Hex) !== verifier)
+                    return null;
+
+                var output = CryptoJS.AES.decrypt(input.toString(CryptoJS.enc.Base64), keyHash.Data, { mode: CryptoJS.mode.CTR, iv: iv, padding: CryptoJS.pad.NoPadding }).toString(CryptoJS.enc.Utf8);
+                if (typeof secondaryVerifier !== "undefined" || secondaryVerifier !== null) {
+                    var expectedVerifier = new Blackfeather.Security.Cryptology.Hmac().ComputeSalted(secondaryVerifier, keyHash.Data, salt).Data.toString(CryptoJS.enc.Hex);
+                    var suspectedVerifier = output.substr(output.length - 64, 64);
+
+                    if ((expectedVerifier !== suspectedVerifier))
+                        return null;
+
+                    output = output.substr(0, output.length - 64);
+                }
 
                 return output;
             };
