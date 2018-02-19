@@ -1,7 +1,7 @@
 {
-  "name": "Blackfeather",
-  "version": "1.0.0",
-  "main": "blackfeather-1.0.0.min.js",
+  "name": "blackfeather",
+  "version": "2.0.0",
+  "main": "blackfeather-2.0.0.js",
   "license": "MIT",
   "author": "Timothy D Meadows II <timothy@timothymeadows.com>",
   "description": "Blackfeather JavaScript framework for node.js, and, browsers.",
@@ -9,9 +9,12 @@
     "node": ">=0.10.0"
   },
   "dependencies": {
+    "crypto-js": "^3.1.9-1",
+    "lz-string": "^1.4.4",
+    "node-math-bigint": "^5.5.1"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/TimothyMeadows/Blackfeather-JavaScript"
+    "url": "https://github.com/TimothyMeadows/blackfeatherjs"
   }
 }
