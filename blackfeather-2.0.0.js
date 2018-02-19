@@ -78,6 +78,20 @@ var Blackfeather = (function () {
                 return output;
             };
         },
+        Hash: function () {
+            this.Compute = function (data) {
+                return CryptoJS.enc.Hex.parse(CryptoJS.SHA256(data).toString(CryptoJS.enc.Hex));
+            };
+            
+            this.ComputeSalted = function (data, salt) {
+                var output = new Blackfeather.Security.Cryptology.SaltedData();
+
+                output.Salt = (typeof salt === "undefined" || salt === null) ? new Blackfeather.Security.Cryptology.SecureRandom().NextBytes(16) : CryptoJS.enc.Base64.parse(salt);
+                output.Data = CryptoJS.enc.Hex.parse(CryptoJS.SHA256(new Blackfeather.Security.Cryptology.Kdf().Compute(data, output.Salt.toString(CryptoJS.enc.Base64)).Data).toString(CryptoJS.enc.Hex));
+
+                return output;
+            };
+        },
         KeyExchange: function () {
             this.KeyPair = function (Private, Public) {
                 this.Private = Private;
