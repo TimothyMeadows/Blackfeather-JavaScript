@@ -82,12 +82,26 @@ var Blackfeather = (function () {
             this.Compute = function (data) {
                 return CryptoJS.enc.Hex.parse(CryptoJS.SHA256(data).toString(CryptoJS.enc.Hex));
             };
-            
+
             this.ComputeSalted = function (data, salt) {
                 var output = new Blackfeather.Security.Cryptology.SaltedData();
 
                 output.Salt = (typeof salt === "undefined" || salt === null) ? new Blackfeather.Security.Cryptology.SecureRandom().NextBytes(16) : CryptoJS.enc.Base64.parse(salt);
                 output.Data = CryptoJS.enc.Hex.parse(CryptoJS.SHA256(new Blackfeather.Security.Cryptology.Kdf().Compute(data, output.Salt.toString(CryptoJS.enc.Base64)).Data).toString(CryptoJS.enc.Hex));
+
+                return output;
+            };
+        },
+        Hmac: function () {
+            this.Compute = function(data, key) {
+                return CryptoJS.enc.Hex.parse(CryptoJS.HmacSHA256(data, key).toString(CryptoJS.enc.Hex));
+            };
+
+            this.ComputeSalted = function (data, key, salt) {
+                var output = new Blackfeather.Security.Cryptology.SaltedData();
+                output.Salt = (typeof salt === "undefined" || salt === null) ? new Blackfeather.Security.Cryptology.SecureRandom().NextBytes(16) : CryptoJS.enc.Base64.parse(salt);
+                var kdf = new Blackfeather.Security.Cryptology.Kdf().Compute(key, output.Salt.toString(CryptoJS.enc.Base64)).Data;
+                output.Data = CryptoJS.enc.Hex.parse(CryptoJS.HmacSHA256(data, kdf).toString(CryptoJS.enc.Hex));
 
                 return output;
             };
