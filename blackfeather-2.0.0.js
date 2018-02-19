@@ -19,9 +19,65 @@ var Blackfeather = (function () {
         }
     };
 
+    Blackfeather.Data.Encoding = Blackfeather.Data.Encoding || {};
+    Blackfeather.Data.Encoding.TextEncoding = Blackfeather.Data.Encoding.TextEncoding || {};
+    Blackfeather.Data.Encoding.TextEncoding.Latin1 = CryptoJS.enc.Latin1;
+    Blackfeather.Data.Encoding.TextEncoding.Utf8 = CryptoJS.enc.Utf8;
+    Blackfeather.Data.Encoding.TextEncoding.Utf16 = CryptoJS.enc.Utf16;
+    Blackfeather.Data.Encoding.TextEncoding.Utf16BigEndian = CryptoJS.enc.Utf16BE;
+    Blackfeather.Data.Encoding.TextEncoding.Utf16LittleEndian = CryptoJS.enc.Utf16LE;
+    Blackfeather.Data.Encoding.BinaryEncoding = Blackfeather.Data.Encoding.BinaryEncoding || {};
+    Blackfeather.Data.Encoding.BinaryEncoding.Hex = CryptoJS.enc.Hex;
+    Blackfeather.Data.Encoding.BinaryEncoding.Base64 = CryptoJS.enc.Base64;
+
     Blackfeather.Security = Blackfeather.Security || {};
     Blackfeather.Security.Cryptology = Blackfeather.Security.Cryptology || {};
     Blackfeather.Security.Cryptology = {
+        PBKDF2_ITERATIONS: 1000,
+        SaltedData: function () {
+            this.Data = null;
+            this.Salt = null;
+
+            this.toString = function () {
+                return this.toJSON();
+            };
+
+            this.toJSON = function () {
+                return JSON.stringify({ Data: this.Data, Salt: this.Salt });
+            };
+
+            this.fromJSON = function (value) {
+                var salted = JSON.parse(value);
+                this.Data = salted.Data;
+                this.Salt = salted.Salt;
+            };
+        },
+        SecureRandom: function () {
+            this.NextBytes = function (length) {
+                return CryptoJS.lib.WordArray.random(length).toString();
+            };
+
+            this.NextBigInt = function (length) {
+                // TODO: Need to audit, may be just as in-secure as Next
+                return randBigInt(length, 0);
+            };
+
+            // TODO: Not actually secure, just temp until a better solution in js can be found
+            this.Next = function (min, max) {
+                return Math.floor(Math.random() * (max - min + 1) + min);
+            };
+        },
+        Kdf: function () {
+            this.Compute = function (data, salt, length) {
+                var output = new Blackfeather.Security.Cryptology.SaltedData();
+                length = (typeof length === "undefined" || length === null) ? 32 : length;
+
+                output.Salt = (typeof salt === "undefined" || salt === null) ? new Blackfeather.Security.Cryptology.SecureRandom().NextBytes(16) : CryptoJS.enc.Base64.parse(salt);
+                output.Data = CryptoJS.enc.Hex.parse(CryptoJS.PBKDF2(data, output.Salt, { keySize: (length / 4), iterations: Blackfeather.Security.Cryptology.PBKDF2_ITERATIONS }).toString(CryptoJS.enc.Hex));
+
+                return output;
+            };
+        },
         KeyExchange: function () {
             this.KeyPair = function (Private, Public) {
                 this.Private = Private;
