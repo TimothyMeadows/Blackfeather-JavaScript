@@ -172,7 +172,7 @@ Compute PBKDF2 returning SaltedData.
   console.log(kdf);
 ```
 # Blackfeather.Security.Cryptology.Hash
-## Compute(data:string, salt:Base64):SaltedData
+## ComputeSalted(data:string, salt:Base64):SaltedData
 Compute SHA256 wth PBKDF2 returning SaltedData.
 ```javascript
   var hash = new Blackfeather.Security.Cryptology.Hash().Compute(
@@ -182,7 +182,7 @@ Compute SHA256 wth PBKDF2 returning SaltedData.
   console.log(hash);
 ```
 # Blackfeather.Security.Cryptology.Hmac
-## Compute(data:string, key:string, salt:Base64):SaltedData
+## ComputeSalted(data:string, key:string, salt:Base64):SaltedData
 Compute HMAC-SHA256 wth PBKDF2 returning SaltedData.
 ```javascript
   var hmac = new Blackfeather.Security.Cryptology.Hmac().Compute(
